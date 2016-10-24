@@ -1,9 +1,9 @@
 package test.driver.sequenceParser;
 
 public class OverlappingFragments {
-  Fragment firstFragment;
-  Fragment secondFragment;
-  Integer overlapLength;
+  private Fragment firstFragment;
+  private Fragment secondFragment;
+  private Integer overlapLength;
 
   public OverlappingFragments(Fragment firstFragment, Fragment secondFragment, Integer overlapLength) {
     this.firstFragment = firstFragment;

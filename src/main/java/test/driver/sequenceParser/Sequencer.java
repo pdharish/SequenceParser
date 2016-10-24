@@ -78,10 +78,12 @@ public class Sequencer implements Runnable {
         if (overlapLength > overlapThreshold) {
           //System.out.println(current.getName() + "->" + fragment.getName());
           SequenceParser.processedFragments.add(current, fragment, overlapLength);
+          SequenceParser.fragmentNames.remove(fragment.getName());
           break;
         }
       }
     }
+
 
   }
 }
