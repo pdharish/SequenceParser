@@ -8,15 +8,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.IllegalFormatException;
 import java.util.List;
+import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
+
+import test.driver.exceptions.IllegalInputFormatException;
 
 public class FastaReader implements Reader {
   static final Logger LOGGER = Logger.getLogger(FastaReader.class.getName());
 
-  File fastaFile;
+  private File fastaFile;
 
-  List<Fragment> fragments;
+  private List<Fragment> fragments;
+
+  @Inject
+  public FastaReader(File fastaFile, List<Fragment> fragments) {
+    this.fastaFile = fastaFile;
+    this.fragments = fragments;
+  }
+
+  public FastaReader() {
+
+  }
 
   public List<Fragment> readFile(String filePath) throws FileNotFoundException, IllegalFormatException {
     fastaFile = new File(filePath);
@@ -46,8 +59,7 @@ public class FastaReader implements Reader {
       }
 
     } catch (IOException ex) {
-      //LOGGER.error("Error reading and parsing file", new FileNotFoundException());
-
+      // suppress invalid mark error here.
     }
 
     return fragments;

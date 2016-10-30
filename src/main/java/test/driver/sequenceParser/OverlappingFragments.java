@@ -1,37 +1,26 @@
 package test.driver.sequenceParser;
 
 public class OverlappingFragments {
-  private Fragment firstFragment;
-  private Fragment secondFragment;
+  private Fragment startFragment;
+  private Fragment endFragment;
   private Integer overlapLength;
 
   public OverlappingFragments(Fragment firstFragment, Fragment secondFragment, Integer overlapLength) {
-    this.firstFragment = firstFragment;
-    this.secondFragment = secondFragment;
+    this.startFragment = firstFragment;
+    this.endFragment = secondFragment;
     this.overlapLength = overlapLength;
   }
 
-  public Fragment getFirstFragment() {
-    return firstFragment;
+  public Fragment getStartFragment() {
+    return startFragment;
   }
 
-  public void setFirstFragment(Fragment firstFragment) {
-    this.firstFragment = firstFragment;
-  }
-
-  public Fragment getSecondFragment() {
-    return secondFragment;
-  }
-
-  public void setSecondFragment(Fragment secondFragment) {
-    this.secondFragment = secondFragment;
+  public Fragment getEndFragment() {
+    return endFragment;
   }
 
   public Integer getOverlapLength() {
     return overlapLength;
   }
 
-  public void setOverlapLength(Integer overlapLength) {
-    this.overlapLength = overlapLength;
-  }
 }

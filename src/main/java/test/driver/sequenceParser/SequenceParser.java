@@ -1,17 +1,19 @@
 package test.driver.sequenceParser;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
-
-import org.apache.log4j.Level;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 
 public class SequenceParser {
 
@@ -21,77 +23,111 @@ public class SequenceParser {
 
   static Set<String> fragmentNames = new HashSet<>();
 
-  public static void main(String[] args) {
+  private FastaReader reader;
 
-    new SequenceParser().getMergedDnaSequence();
+  private String filePath;
+
+  private String finalSequence;
+  @Inject
+  public SequenceParser(FastaReader reader, String filePath) {
+    this.reader = reader;
+    this.filePath = filePath;
+  }
+
+  public SequenceParser() {
 
   }
 
-  public void getMergedDnaSequence() {
+  // Initialization block, in case reader is not injected
+  {
     Properties prop = new Properties();
     InputStream input = null;
 
     try {
-
       input = getClass().getClassLoader().getResourceAsStream("project.properties");
       prop.load(input);
-      FastaReader reader = new FastaReader();
-      List<Fragment> fragments = reader.readFile(prop.getProperty("inputFilePath"));
-      //fragmentNames.addAll(fragments.forEach(fragment -> fragment.getName()));
-      for(Fragment f: fragments) {
-        fragmentNames.add(f.getName());
-      }
-      fragments.forEach(fragment -> {
-        //System.out.println(fragment.getName());
-        Thread processor = new Thread(new Sequencer(fragment, Collections.unmodifiableList(fragments)));
-        processor.start();
-
-      });
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException ex) {
-
-      }
-      printMergedOutput();
+      reader = new FastaReader();
+      filePath = prop.getProperty("inputFilePath");
+      logger.info("Processing file " + prop.getProperty("inputFilePath"));
     } catch (IOException ex) {
-      logger.log(java.util.logging.Level.SEVERE, "Error getting project properties");
+      logger.error("Error processing file");
       ex.printStackTrace();
     }
   }
 
-  private void printMergedOutput() {
-    StringBuilder outputSequence = new StringBuilder();
-    if (fragmentNames.size() > 1 || fragmentNames.size() == 0 ) {
-      logger.log(java.util.logging.Level.SEVERE, "Fked up yo");
+  public static void main(String[] args) {
+    String output = new SequenceParser().getMergedDnaSequence();
+
+    System.out.println("\nOutput sequence returned is:");
+    System.out.println("" + output);
+
+    System.out.println("\nLength of the output is: " + output.length());
+  }
+
+  public String getMergedDnaSequence() {
+
+    List<Fragment> fragments = null;
+    try {
+      fragments = reader.readFile(filePath);
+      logger.info("Data in input file processed");
+       /*
+       Fork threads for each of the input segment in the list.
+       I did not use this as join() was taking more time than with ExecutorService.
+
+       fragments.forEach(fragment -> {
+          //System.out.println(fragment.getName());
+          Thread processor = new Thread(new Sequencer(fragment, Collections.unmodifiableList(fragments)));
+          processor.start();
+
+        });
+      */
+      fragments.forEach(f -> fragmentNames.add(f.getName()));
+
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+
+    ExecutorService executorServ = Executors.newCachedThreadPool();
+    for (int i = 0; i < fragments.size(); i++) {
+      executorServ.execute(new Sequencer(fragments.get(i), fragments));
+    }
+    executorServ.shutdown();
+    try {
+      boolean done = executorServ.awaitTermination(1, TimeUnit.MINUTES);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    finalSequence = printMergedOutput();
+
+    return finalSequence;
+  }
+
+  private String printMergedOutput() {
+    StringBuilder finalSequence = new StringBuilder();
+    if (fragmentNames.size() > 1 || fragmentNames.size() == 0) {
+      logger.fatal("The output doesn't seem to be formed correctly as there are multiple starting points for the DNA sequence.",
+          new InputMismatchException("Please ensure input is from a single DNA sequence"));
     }
     String head = null;
     for (Iterator<String> it = fragmentNames.iterator(); it.hasNext(); ) {
       head = it.next();
-      System.out.println("head is " + head);
+      //System.out.println("head is " + head);
     }
     OverlappingFragments olFragment = processedFragments.get(head);
-    outputSequence.append(olFragment.getFirstFragment().getSequence());
-    int answer = olFragment.getFirstFragment().getSequence().length();
+    finalSequence.append(olFragment.getStartFragment().getSequence());
 
     while (true) {
       int overlapLength = olFragment.getOverlapLength();
-      outputSequence.append(olFragment.getSecondFragment().getSequence().substring(overlapLength));
-      head = olFragment.getSecondFragment().getName();
+      finalSequence.append(olFragment.getEndFragment().getSequence().substring(overlapLength));
+      head = olFragment.getEndFragment().getName();
       olFragment = processedFragments.get(head);
       if (olFragment == null) {
         break;
       }
-      //answer += olFragment.getFirstFragment().getSequence().substring(olFragment.getOverlapLength()).length();
-
     }
 
-    System.out.println(outputSequence.toString());
-
-    System.out.println(outputSequence.toString().length());
-
-    answer += processedFragments.getTotalStringLength();
-
-    System.out.println(answer);
+    return finalSequence.toString();
 
   }
 

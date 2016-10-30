@@ -1,13 +1,12 @@
 package test.driver.sequenceParser;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SequencedFragments {
   private Map<String, OverlappingFragments> output;
 
-  int totalStringLength;
+  private int totalStringLength;
 
   public SequencedFragments() {
     this.output = new ConcurrentHashMap<>();
@@ -23,7 +22,7 @@ public class SequencedFragments {
 
   public int getTotalStringLength() {
     output.forEach((k, v) -> {
-      totalStringLength += v.getSecondFragment().getSequence().length() - v.getOverlapLength();
+      totalStringLength += v.getEndFragment().getSequence().length() - v.getOverlapLength();
     });
 
     return totalStringLength;
