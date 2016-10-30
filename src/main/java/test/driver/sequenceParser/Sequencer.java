@@ -1,7 +1,13 @@
 package test.driver.sequenceParser;
 
 import java.util.List;
+/*
+Runnable which processes the fragments.
 
+This class finds the next fragment for a given fragment.
+KMP algorithm is used to get a O(n) runtime to determine the length of the match in the strings.
+
+ */
 public class Sequencer implements Runnable {
   Fragment current;
   List<Fragment> fragments;
@@ -58,11 +64,13 @@ public class Sequencer implements Runnable {
     for (Fragment fragment : fragments) {
       if (!current.getName().equals(fragment.getName())) {
         int overlapLength = overlappedLength(current.getSequence(), fragment.getSequence());
+        // Find the minimum length of overlap which will determine if we let the sequences to match.
         double minOverlapLength =
             Math.min(Math.ceil(current.getSequence().length() / 2), Math.ceil(fragment.getSequence().length() / 2));
         if (overlapLength > minOverlapLength) {
           SequenceParser.processedFragments.add(current, fragment, overlapLength);
           SequenceParser.fragmentNames.remove(fragment.getName());
+          // match found. End processing for current fragment. This also terminates the loop.
           break;
         }
       }

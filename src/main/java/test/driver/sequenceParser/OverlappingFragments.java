@@ -11,6 +11,9 @@ public class OverlappingFragments {
     this.overlapLength = overlapLength;
   }
 
+  // Do not provide set() functions here as it could lead to wrongly setting the start and end fragments.
+  // Use constructor to create the correct objects instead.
+
   public Fragment getStartFragment() {
     return startFragment;
   }

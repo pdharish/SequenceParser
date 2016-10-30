@@ -12,12 +12,12 @@ public class RunningTimeTest {
   public void getAverageRunningTime_Multithreaded() {
     LogManager.getRootLogger().setLevel(Level.ALL);
     long totalTime = 0;
-    for (int i = 0; i < 10; i++) {
+
       SequenceParser sequenceParser = new SequenceParser();
       long startTime = System.currentTimeMillis();
       String output = sequenceParser.getMergedDnaSequence();
       long endTime = System.currentTimeMillis();
-      totalTime += endTime - startTime;
+      totalTime = endTime - startTime;
       try {
         sequenceParser = null;
         System.gc();
@@ -26,8 +26,8 @@ public class RunningTimeTest {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-    }
-    System.out.print("\nAverage run time over 10 trials is: ");
-    System.out.println(totalTime / 10);
+
+    System.out.print("\nRunning time is : ");
+    System.out.println(totalTime);
   }
 }

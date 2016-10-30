@@ -3,6 +3,9 @@ package test.driver.sequenceParser;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/*
+Stores the output in a map.
+ */
 public class SequencedFragments {
   private Map<String, OverlappingFragments> output;
 
@@ -20,6 +23,8 @@ public class SequencedFragments {
     return output.get(name);
   }
 
+  // use this function to confirm length of final string, if required
+  // I read that practically, this might not be useful so I didn't write a test for it.
   public int getTotalStringLength() {
     output.forEach((k, v) -> {
       totalStringLength += v.getEndFragment().getSequence().length() - v.getOverlapLength();

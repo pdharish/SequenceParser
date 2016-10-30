@@ -19,23 +19,23 @@ public class FastReaderTest {
 
   SequenceParser sequenceParser;
 
-  @Mock FastaReader mockReader;
+  @Mock
+  FastaReader mockReader;
 
   String fileName;
+
   @Before
   public void setUp() {
     sequenceParser = new SequenceParser();
-
     Properties prop = new Properties();
-    InputStream input = null;
-
+    InputStream input;
     try {
       input = getClass().getClassLoader().getResourceAsStream("project.properties");
       prop.load(input);
       fileName = prop.getProperty("inputFilePath");
-      } catch (IOException ex) {
-        assert false;
-      }
+    } catch (IOException ex) {
+      assert false;
+    }
   }
 
   @Test
@@ -54,7 +54,4 @@ public class FastReaderTest {
       assert true;
     }
   }
-
-
-
 }

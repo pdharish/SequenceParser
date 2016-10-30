@@ -45,7 +45,6 @@ public class SequenceParserTest {
   @Test
   public void testOutput_Success() {
     mockReader = Mockito.mock(FastaReader.class);
-
     List<Fragment> mockFragments = new ArrayList<>(Arrays.asList(
         new Fragment(">Frag_56", "ATTAGACCTG"),
         new Fragment(">Frag_57", "CCTGCCGGAA"),
@@ -61,9 +60,7 @@ public class SequenceParserTest {
       assert false : "Invalid file";
     }
     String output = sequenceParser.getMergedDnaSequence();
-
     assert output != null;
     assert output.length() == 19;
   }
-
 }
