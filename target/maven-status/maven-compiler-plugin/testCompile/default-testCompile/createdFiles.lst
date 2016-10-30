@@ -1,0 +1,3 @@
+test/driver/sequenceParser/unitTests/FastReaderTest.class
+test/driver/sequenceParser/performanceTests/RunningTimeTest.class
+test/driver/sequenceParser/unitTests/SequenceParserTest.class

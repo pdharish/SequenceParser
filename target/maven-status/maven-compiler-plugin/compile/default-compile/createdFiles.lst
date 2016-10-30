@@ -1,0 +1,8 @@
+test/driver/sequenceParser/Reader.class
+test/driver/exceptions/IllegalInputFormatException.class
+test/driver/sequenceParser/Sequencer.class
+test/driver/sequenceParser/FastaReader.class
+test/driver/sequenceParser/OverlappingFragments.class
+test/driver/sequenceParser/Fragment.class
+test/driver/sequenceParser/SequencedFragments.class
+test/driver/sequenceParser/SequenceParser.class
